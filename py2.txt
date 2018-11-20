@@ -1,0 +1,146 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Fri May  4 18:03:02 2018
+
+@author: RISHI
+"""
+#%%
+import numpy as np
+import sklearn as sk
+import pandas as pd
+dout=pd.read_csv('C:/Users/RISHI/Desktop/pyton dataset info/out.csv',engine='python')
+from sklearn import preprocessing
+df=pd.read_csv('C:/Users/RISHI/lab.csv',engine='python')
+dout=pd.DataFrame.copy(dc)
+dc.drop(dc.columns[0], axis=1,inplace=True,errors='ignore')
+dout.drop(dout.columns[[5,11,14,16,18,30,34,35]], axis=1,inplace=True,errors='ignore')
+
+#%%
+
+
+
+
+#%%
+
+le={}
+colname=['term','sub_grade','emp_title','emp_length','home_ownership','verification_status','purpose','addr_state','earliest_cr_line','initial_list_status','last_pymnt_d','last_pymnt_amnt','next_pymnt_d','last_credit_pull_d','application_type']
+
+for i in colname:
+    le[i]=preprocessing.LabelEncoder()
+
+
+for i in colname:
+    dout[i]=le[i].fit_transform(dout.__getattr__(i))    
+
+he={}
+col2=['installment','annual_inc','total_pymnt','total_rec_prncp','total_rec_int','tot_cur_bal','total_rev_hi_lim'] 
+for i in col2:
+    he[i]=preprocessing.LabelEncoder()
+
+
+for i in col2:
+    dout[i]=he[i].fit_transform(dout[i].astype(str))  
+    
+    
+dout.head()    
+dout.to_csv('lab.csv')
+#%%
+
+'funded_amnt_inv','grade','out_prncp_inv','total_pymnt_inv'id','member_id','loan_amnt','policy_code','pymnt_plan','zip_code','title'
+'desc','mths_since_last_delinq','mths_since_last_record','mths_since_last_major_derog','annual_inc_joint','dti_joint','verification_status_joint','open_acc_6m','open_il_6m','open_il_12m','open_il_24m','mths_since_rcnt_il','total_bal_il','il_util','open_rv_12m','open_rv_24m','max_bal_bc','all_util','inq_fi','total_cu_tl','inq_last_12m'
+
+#%%
+testlist=['Jun-15','Jul-15','Aug-15','Sep-15','Oct-15','Nov-15','Dec-15']
+test=dout.loc[dout.issue_d.isin(testlist)]
+train=dout.loc[-dout.issue_d.isin(testlist)]
+train.drop(['issue_d'],axis=1,inplace=True,errors='ignore')
+test.drop(['issue_d'],axis=1,inplace=True,errors='ignore')
+xtrain=train.values[:,:-1]
+ytrain=train.values[:,-1]
+
+xtest=test.values[:,:-1]
+ytest=test.values[:,-1]
+from sklearn.preprocessing import StandardScaler
+#scaling train data
+   scaler=StandardScaler()
+   scaler.fit(xtrain)
+   xtrain=scaler.transform(xtrain)
+   ytrain=ytrain.astype(int)
+#scaling test data
+   scaler=StandardScaler()
+   scaler.fit(xtest)
+   xtest=scaler.transform(xtest)
+   ytest=ytest.astype(int)
+
+
+#%%
+   #logistic regression   
+#%%   
+from sklearn.linear_model import LogisticRegression
+ from sklearn.metrics import confusion_matrix,accuracy_score,classification_report
+
+ classifier = (LogisticRegression())
+ classifier.fit(xtrain,ytrain)
+ ypred=classifier.predict(xtest)
+ print(list(zip(ytest,ypred)))
+ 
+ conf=confusion_matrix(ytest,ypred)
+ print(conf)
+#%% 
+
+    
+#%%
+ 
+ 
+ print("classifivcation report")
+ print(classification_report(ytest,ypred))
+ accuracy_score=accuracy_score(ytest,ypred)
+ (conf[0,0]+conf[1,1])/(conf[0,1]+conf[1,0]+conf[0,0]+conf[1,1])
+ print("Accuracy of the model:",accuracy_score)
+ 
+
+#%%
+#%%
+ ypred_prob=classifier.predict_proba(xtest)
+ print(ypred_prob)
+ypred_class=[]
+for value in ypred_prob[:,0]:
+        if value > 0.95:
+            ypred_class.append(1)
+        else:
+            ypred_class.append(0)
+ print(ypred_class)
+ con1=confusion_matrix(ytest.tolist(),ypred_class)
+print(con1)
+(con1[0,0]+con1[1,1])/(con1[0,1]+con1[1,0]+con1[0,0]+con1[1,1])
+#%%
+#%%
+from sklearn.tree import DecisionTreeClassifier
+model=DecisionTreeClassifier()
+model.fit(xtrain,ytrain)
+ypred1=model.predict(xtest)
+print(list(zip(ytest,ypred1)))
+
+from sklearn.metrics import confusion_matrix,accuracy_score,classification_report
+print(confusion_matrix(ytest,ypred1))
+accuracy_score(ytest.tolist(),ypred1)
+print(classification_report(y_test,ypred))
+#%%
+
+
+
+#%%
+
+
+from sklearn.ensemble import RandomForestClassifier
+model2=RandomForestClassifier(15)
+model2.fit(xtrain,ytrain)
+ypred2=model2.predict(xtest)
+
+print(list(ypred2))
+print(confusion_matrix(ytest,ypred2))
+accuracy_score(y_test,ypred1)
+print(classification_report(y_test,ypred1))
+
+
+
